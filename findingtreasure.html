@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Finding Treasure</title>
+</head>
+<body>
+    <h1 id="heading">Welcome to the Treasure Hunt!</h1>
+    <p id="distance">Click the map to start the hunt!</p>
+    <img id="map" width="400" height="400" src="https://nostarch.com/images/treasuremap.png">
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        // --- VARIABLES AND SETUP (OUTSIDE CLICK HANDLER) ---
+        var clicks = 0;
+        var width = 400;
+        var height = 400;
+
+        // Simplified function to get a single random number (coordinate)
+        var getrandomnumber = function (size) {
+            return Math.floor(Math.random() * size);
+        };
+
+        // 1. **CORRECTION**: Generate the treasure location ONLY ONCE
+        var target = {
+            x: getrandomnumber(width),
+            y: getrandomnumber(height)
+        };
+        //console.log(x + " + " + y)
+
+        // Function to get distance from click to treasure (needs to be outside if used in the handler)
+        var getDistance = function(event, target) {
+            // Get click coordinates relative to the map image
+            var x = event.pageX - $("#map").offset().left;
+            var y = event.pageY - $("#map").offset().top;
+
+            if (y < 5 && x < 5) {
+                alert("Target coordinates: " + target.x + ", " + target.y);
+                clicks -= 3;
+            }
+
+            // Calculate the distance components
+            var distanceX = Math.abs(x - target.x); // **CORRECTION**: Use target.x
+            var distanceY = Math.abs(y - target.y); // **CORRECTION**: Use target.y
+
+            // Calculate the total distance using Pythagorean theorem
+            var Distance = Math.sqrt((distanceX * distanceX) + (distanceY * distanceY));
+            
+            return Distance; // Return the calculated distance
+        };
+
+        var distancehint = function(Distance) {
+            if (Distance < 15) {
+                return "BOILING HOT! 🔥🔥";
+            } else if (Distance < 20) {
+                return "You're **BURNING** HOT! 🔥🔥";
+            } else if (Distance < 30) {
+                return "You're **extremely hot!** 🔥";
+            } else if (Distance < 40) {
+                return "You're **very hot!**";
+            } else if (Distance < 50) {
+                return "You're **hot!**";
+            } else if (Distance < 60) {
+                return "You're **sunny day temperature.**";
+            } else if (Distance < 70) {
+                return "You're **A little hot!**";
+            } else if (Distance < 80) {
+                return "You're **A tiny bit hot!**";
+            } else if (Distance < 100) {
+                return "You're **a little cold.**";
+            } else if (Distance < 150) {
+                return "You're **kinda cold.**";
+            } else if (Distance < 175) {
+                return "You're **pretty cold.**";
+            } else if (Distance < 222) {
+                return "You're **really cold.**";
+            } else if (Distance < 255) {
+                return "You're **super cold.**";
+            } else if (Distance < 300) {
+                return "You're **subzero!**";          
+            } else {
+                return "You're **ice cold! (coldest)** 🥶";
+            }
+        };
+
+        // --- THE CLICK HANDLER ---
+        $("#map").click(function(event) {
+            clicks++; // Count the click
+
+            // Calculate the distance
+            var distance = getDistance(event, target);
+
+            // Get the hint text
+            var hint = distancehint(distance);
+
+            // 2. **CORRECTION**: Update the hint text on the page
+            $("#distance").text(hint + " (Click: " + clicks + ")");
+            
+            // Check for the win condition
+            if (distance < 11) {
+                // Use an alert for the win message
+                alert("You found the treasure in " + clicks + " clicks!");
+                
+                // OPTIONAL: Disable further clicks after winning
+                $("#map").off("click");
+            }
+        });
+    </script>
+</body>
+</html>
